@@ -1,0 +1,23 @@
+{
+  "unversionedId": "my-sidebar/docker",
+  "id": "my-sidebar/docker",
+  "title": "docker",
+  "description": "docker 3",
+  "source": "@site/docs/my-sidebar/docker.md",
+  "sourceDirName": "my-sidebar",
+  "slug": "/my-sidebar/docker",
+  "permalink": "/docs/my-sidebar/docker",
+  "draft": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/my-sidebar/docker.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "kubernetes",
+    "permalink": "/docs/my-sidebar/kubernetes"
+  }
+}
