@@ -1,0 +1,23 @@
+{
+  "unversionedId": "词根词缀/lesson1",
+  "id": "词根词缀/lesson1",
+  "title": "(走) 词根 -cess,-ceed,-cede,-gress,-gred,-grad",
+  "description": "process n. 过程、进程； v.处理、加工  (392)",
+  "source": "@site/docs/词根词缀/lesson1.md",
+  "sourceDirName": "词根词缀",
+  "slug": "/词根词缀/lesson1",
+  "permalink": "/english/docs/词根词缀/lesson1",
+  "draft": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/词根词缀/lesson1.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 0,
+  "frontMatter": {
+    "sidebar_position": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Tutorial Intro",
+    "permalink": "/english/docs/intro"
+  }
+}

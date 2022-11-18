@@ -1,5 +1,5 @@
 {
-  "permalink": "/blog/2022/10/18/vcluster",
+  "permalink": "/english/blog/2022/10/18/vcluster",
   "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2022-10-18-vcluster.md",
   "source": "@site/blog/2022-10-18-vcluster.md",
   "title": "vcluster",
@@ -12,7 +12,7 @@
   "authors": [],
   "frontMatter": {},
   "nextItem": {
-    "title": "Welcome",
-    "permalink": "/blog/welcome"
+    "title": "MDX Blog Post",
+    "permalink": "/english/blog/mdx-blog-post"
   }
 }

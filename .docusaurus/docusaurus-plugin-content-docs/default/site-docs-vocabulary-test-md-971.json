@@ -1,0 +1,23 @@
+{
+  "unversionedId": "vocabulary/test",
+  "id": "vocabulary/test",
+  "title": "test",
+  "description": "",
+  "source": "@site/docs/vocabulary/test.md",
+  "sourceDirName": "vocabulary",
+  "slug": "/vocabulary/test",
+  "permalink": "/english/docs/vocabulary/test",
+  "draft": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/vocabulary/test.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 0,
+  "frontMatter": {
+    "sidebar_position": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Tutorial Intro",
+    "permalink": "/english/docs/intro"
+  }
+}

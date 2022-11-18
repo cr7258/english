@@ -1,0 +1,244 @@
+{
+  "blogPosts": [
+    {
+      "id": "/2022/10/18/vcluster",
+      "metadata": {
+        "permalink": "/se7en-documentation/blog/2022/10/18/vcluster",
+        "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2022-10-18-vcluster.md",
+        "source": "@site/blog/2022-10-18-vcluster.md",
+        "title": "vcluster",
+        "description": "1 vcluster 介绍",
+        "date": "2022-10-18T00:00:00.000Z",
+        "formattedDate": "October 18, 2022",
+        "tags": [],
+        "readingTime": 20.93,
+        "hasTruncateMarker": false,
+        "authors": [],
+        "frontMatter": {},
+        "nextItem": {
+          "title": "Welcome",
+          "permalink": "/se7en-documentation/blog/welcome"
+        }
+      },
+      "content": "## 1 vcluster 介绍\n虚拟集群（virtual cluster, 简称 vcluster）是在常规的 Kubernetes 集群之上运行的一个功能齐全，轻量级，隔离性良好的 Kubernetes 集群。与完全独立的“真实“集群相比，虚拟集群没有自己的节点池，但是可以在底层宿主集群上调度工作负载，同时具有自己单独的控制平面。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922222305.png)\n\nvcluster 有以下特点：\n- **可使用集群层面的资源**：在虚拟集群允许租户使用 CRD、Namespaces、ClusterRole 等资源，这比通过命名空间隔离的方式功能更加强大。\n-   **轻量级**：vcluster 默认使用 k3s 构建虚拟集群，k3s 是一个经过认证的轻量级 Kubernetes 发行版，100% 兼容 Kubernetes API，它将 Kubernetes 组件编译为小于 100 MB 的单个二进制文件中，默认禁用所有不需要的 Kubernetes 功能，例如 pod 调度程序或某些控制器，这使得 k3s 的内存使用仅仅为常规 k8s 的一半。另外 vcluster 还支持其他发行版，例如 k0s 或常规 k8s。\n- **经济高效**：创建虚拟集群比“真正的“集群更加便宜和高效，最少只需要创建单个 vcluster pod（包含 API server, syncer, 后端存储）。\n- **良好的隔离性**：每个虚拟集群有独立的控制面，只是共享了底层宿主集群的计算资源等服务。\n-   **没有性能下降**：Pod 实际上被部署在底层主机集群中，因此它们在运行时根本不会受到性能影响。\n-   **减少主机集群的开销**：将大型多租户集群拆分为更小的 vcluster，以降低复杂性并提高可扩展性。由于大多数 vcluster api 请求和对象根本不会到达宿主集群，因此 vcluster 可以大大降低底层 Kubernetes 集群的压力\n-   **易于部署** ：vcluster 可以通过 vcluster CLI、helm、kubectl、[cluster api](https://github.com/loft-sh/cluster-api-provider-vcluster)、Argo CD 等多种工具进行部署（它基本上只是一个 StatefulSet 资源）。\n-   **单一命名空间封装**：每个 vcluster 及其所有的工作负载都位于底层宿主集群的单一命名空间内。\n-   **灵活和多功能**：vcluster 支持不同的后端存储（例如 sqlite、mysql、postgresql 和 etcd）、插件、自定义资源同步策略，你甚至可以在 vcluster 中部署 vcluster。\n\n使用虚拟集群相比创建单独的 Kubernetes 集群更经济高效，相较于常规的命名空间则能够提供更好的多租户和隔离特性。下表对命名空间、vcluster 和 Kubernetes 集群 3 种方式在隔离性、多租户访问、成本等方面进行了对比。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221015164752.png)\n## 2 vcluster 快速上手\n### 2.1 准备持久化存储\n创建 vcluster 默认需要使用持久化存储，如果集群上已经配置好默认的持久化存储，可以跳过此步骤。\n\n执行以下命令，安装 OpenEBS。\n```bash\nkubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml\n```\n\n设置 StorageClass openebs-hostpath 作为默认的 StorageClass。\n```bash\nkubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221015173730.png)\n\n确认 OpenEBS 各组件正常运行。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922214231.png)\n\n### 2.2 安装 vcluster CLI\n参照 [Install vcluster CLI[1]](https://www.vcluster.com/docs/getting-started/setup) 根据对应的操作系统版本进行安装。\n\n### 2.3 创建虚拟集群\n执行以下命令创建一个名为 my-vcluster 的虚拟集群，默认会在 `vcluster-<vcluster-name>` （本例中是 vcluster-my-vcluster）Namespace 中部署虚拟集群，也可以使用 `-n` 参数指定部署虚拟集群的 Namespace。\n```bash\nvcluster create my-vcluster\n```\n\n虚拟集群创建成功后，vcluster 会自动帮我们通过端口转发连接到虚拟集群。如果使用 kubectl 或者 helm 的方式安装虚拟集群，则可以使用 `vcluster connect <cluster-name>` 命令来手动连接到虚拟集群。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922215010.png)\n\n打开另一个窗口执行 kubectl 命令查看 Pod 和 Namespace，可以看到这是一个全新的集群，并不能看到虚拟集群所属的 vcluster-my-vcluster Namespace，因为该 Namespace 存在于宿主集群中。 \n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922215322.png)\n\n### 2.4 在虚拟集群中创建资源\n在虚拟集群中创建一个 Namespace，并在里面部署一个 nginx Deployment。\n```bash\nkubectl create namespace demo-nginx\nkubectl create deployment nginx-deployment -n demo-nginx --image=nginx\n```\n\n查看创建的 Pod。\n```bash\n> kubectl get pod -n demo-nginx\nNAME                                READY   STATUS    RESTARTS   AGE\nnginx-deployment-5fbdf85c67-42rmp   1/1     Running   0          13s\n```\n\n键盘按 ctrl + c 断开和虚拟集群的连接，kubectl 的上下文会自动切换回宿主集群。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922220731.png)\n\n\n在宿主集群查看 Namespace，并没有看到在虚拟集群中创建的 demo-nginx Namespace，因为该 Namespace 只存在于虚拟集群中。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922220954.png)\n\n同样也看不到 nginx-deployment。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922221516.png)\n\n\nPod 在虚拟集群所属的 Namespace 中是存在的，vcluster 中有一个 **syncer** 控制器，主要负责将虚拟集群中的资源同步到底层宿主集群的命名空间中，Pod 的实际调度还是依靠宿主集群上的调度器完成的。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220922221337.png)\n\n### 2.5 清理虚拟集群\n使用 `vcluster delete` 命令可以删除虚拟集群。\n```bash\nvcluster delete my-vcluster\n```\n## 3 暴露 vcluster\n默认情况下，vcluster 只能通过远程集群中的端口转发进行访问。要想直接访问虚拟集群可以选择通过使用 LoadBalancer 或者 NodePort 类型的 Service 将虚拟集群暴露到集群外。\n\n最简单的方式就是在创建虚拟集群的时候指定 `--expose` 参数，vcluster 会创建 LoadBalancer 类型的 Service 暴露虚拟集群（前提要有公有云托管的 Kubernetes 集群支持 LoadBalancer）。等待虚拟集群创建完成后，vcluster 会自动帮我们将虚拟集群的 kubeconfig 配置添加到 ~/.kube/config 文件中，此时可以直接通过 kubectl 命令行访问虚拟集群。\n```bash\nvcluster create my-vcluster --expose\n```\n\n你也可以手动创建 Service 来暴露 vcluster，更多方式参见 [Exposing vcluster (ingress etc.)](https://www.vcluster.com/docs/operator/external-access)。\n\n## 4 网络 & DNS 解析\n默认情况下，Pod 和 Service 资源都会从虚拟集群同步到主机集群，以便为 vcluster 启用正确的网络功能。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221015190051.png)\n\n创建一个虚拟集群用于测试。\n```bash\nvcluster create net-vcluster\n```\n### 4.1 通过 IP 地址通信\n在虚拟集群中创建的 Pod 会被 vcluster 的 syncer 同步到宿主集群中，因此 Pod 实际上运行在底层宿主集群中。这意味着这些 Pod 具有常规的集群内部 IP 地址，并且可以通过 IP 地址相互通信。\n\n在虚拟集群中创建一个 Pod。\n```bash\nkubectl create deployment nettool-virtual --image=cr7258/nettool:v1\n```\n在宿主集群中创建一个 Pod。（在宿主集群 context 中执行）\n```bash\n# 打开另一个窗口，先切换到宿主集群的上下文中，可以使用 kubectl config get-context 命令列出上下文\nkubectl config use-context <host-cluster-context>\nkubectl create deployment nettool-host --image=cr7258/nettool:v1\n```\n\n查看在虚拟集群和宿主集群中创建的 Pod 的 IP 地址。（在宿主集群 context 中执行）\n```bash\nkubectl get pod -o wide\nkubectl get pod -n vcluster-net-vcluster -o wide\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220923110715.png)\n\n两个 Pod 之间互相 Ping 测试，网络之间可以互通。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220923114034.png)\n\n虚拟集群和宿主集群之间的 Pod 以及 Service 资源默认情况下都可以直接通过 IP 地址互相访问。\n\n### 4.2 通过域名通信\n每个虚拟集群都有自己独立的 DNS 服务（CoreDNS），为虚拟集群中的 Service 提供 DNS 解析。\n\n将虚拟集群和宿主集群的 Deployment 分别通过 Service 进行暴露。\n```bash\nkubectl config use-context <host-cluster-context>\nkubectl expose deployment nettool-host --port=80 --target-port=80\n\nkubectl config use-context <virtual-cluster-context>\nkubectl expose deployment nettool-virtual --port=80 --target-port=80\n```\n### 4.3 将宿主集群 Service 映射到虚拟集群中\n将宿主集群 default Namespace 中的 nettool-host Service 映射到虚拟集群的 default Namespace 中的 nettool-host Service。\n```yaml\nmapServices:\n  fromHost:\n  - from: default/nettool-host \n    to: default/nettool-host\n```\n```bash\nvcluster create net-vcluster --upgrade -f host-to-vcluster.yaml\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220923143358.png)\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220925165954.png)\n\n使用虚拟集群的 Pod 访问宿主集群的 nettool-host Service。\n```bash\n> kubectl exec -it deployments/nettool-virtual -- curl nettool-host\n\n# 返回结果\n<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n<style>\nhtml { color-scheme: light dark; }\nbody { width: 35em; margin: 0 auto;\nfont-family: Tahoma, Verdana, Arial, sans-serif; }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, the nginx web server is successfully installed and\nworking. Further configuration is required.</p>\n\n<p>For online documentation and support please refer to\n<a href=\"http://nginx.org/\">nginx.org</a>.<br/>\nCommercial support is available at\n<a href=\"http://nginx.com/\">nginx.com</a>.</p>\n\n<p><em>Thank you for using nginx.</em></p>\n</body>\n</html>\n```\n### 4.4 将虚拟集群 Service 映射到宿主集群中\n```bash\nvcluster create net-vcluster --upgrade -f vcluster-to-host.yaml\n```\n\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20220925170048.png)\n\n使用宿主集群的 Pod 访问虚拟集群的 nettool-virtual Service，虚拟集群中的 Service 会映射到宿主集群的 vcluster-net-vcluster Namespace 中。\n```bash\n> kubectl exec -it deployments/nettool-host -- curl nettool-virtual.vcluster-net-vcluster\n\n# 返回结果\n<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n<style>\nhtml { color-scheme: light dark; }\nbody { width: 35em; margin: 0 auto;\nfont-family: Tahoma, Verdana, Arial, sans-serif; }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, the nginx web server is successfully installed and\nworking. Further configuration is required.</p>\n\n<p>For online documentation and support please refer to\n<a href=\"http://nginx.org/\">nginx.org</a>.<br/>\nCommercial support is available at\n<a href=\"http://nginx.com/\">nginx.com</a>.</p>\n\n<p><em>Thank you for using nginx.</em></p>\n</body>\n</html>\n```\n\n实验完毕后，执行以下命令清理虚拟集群。\n```bash\nvcluster delete net-vcluster\n```\n\n## 5 暂停 & 恢复虚拟集群\n创建一个虚拟集群用于测试。\n```bash\nvcluster create recover-vcluster\n```\n\n查看当前虚拟集群运行的工作负载：\n- coredns Pod 会通过 syncer 从宿主集群同步到虚拟集群中。\n- recover-vcluster 以 StatefulSet 的方式部署，用于管理虚拟集群。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221004234534.png)\n\n### 5.1 暂停虚拟集群\n执行以下命令，暂停虚拟集群。会将 vcluster 的 StatefulSet 的副本数缩减为 0，并删除 vcluster 创建的所有工作负载（本示例中是 coredns Pod）。\n\n```bash\nkubectl config use-context <host-cluster-context>\nvcluster pause recover-vcluster\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221004234640.png)\n\n### 5.2 恢复虚拟集群\n执行以下命令，恢复虚拟集群。会将 vcluster 的 StatefulSet 的副本数恢复为原样，并且 vcluster syncer 将重新创建相应的工作负载。\n\n```bash\nvcluster resume recover-vcluster\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221004234739.png)\n\n实验完毕后，执行以下命令清理虚拟集群。\n```bash\nvcluster delete recover-vcluster\n```\n\n## 6 存储\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221005000122.png)\n\n```bash\n# sync-storage.yaml\nvcluster create storage-vcluster -f sync-storage.yaml\n```\n\n### 6.1 创建 StorageClass\n```yaml\n# sc.yaml\napiVersion: storage.k8s.io/v1\nkind: StorageClass\nmetadata:\n  name: my-local-hostpath\n  annotations:\n    openebs.io/cas-type: local\n    cas.openebs.io/config: |\n      - name: StorageType\n        value: hostpath\n      - name: BasePath\n        value: /var/my-local-hostpath\nprovisioner: openebs.io/local # 指定 OpenEBS 作为持久卷的 Provisioner\nreclaimPolicy: Delete\nvolumeBindingMode: WaitForFirstConsumer\n```\n\n在虚拟集群中创建 StorageClass。\n```bash\nkubectl config use-context <virtual-cluster-context>\nkubectl apply -f sc.yaml\n```\n\nvcluster 会在宿主集群中创建真正的 StorageClass，将 my-local-hostpath StorageClass 以某种格式进行重写。\n\n```bash\nkubectl config use-context <host-cluster-context>\nkubectl get sc | grep my-local-hostpath\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221005202932.png)\n\n### 6.2 创建 PersistentVolumeClaim\n```yaml\n# pvc-sc.yaml\napiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: my-persistent-volume-claim\nspec:\n  storageClassName: my-local-hostpath # 指定 StorageClass\n  accessModes:\n    - ReadWriteOnce\n  resources:\n    requests:\n      storage: 1Gi\n```\n\n在虚拟集群中创建 PersistentVolumeClaim。\n```bash\nkubectl config use-context <virtual-cluster-context>\nkubectl apply -f pvc-sc.yaml\n```\n\n由于我们创建的 StorageClass 将 `volumeBindingMode` 参数设置为 `WaitForFirstConsumer`，表示当 PVC 被 Pod 使用时，才触发 PV 和后端存储的创建，同时实现 PVC/PV 的绑定，由于当前还没有 Pod 使用该 PVC，因此 PVC 当前处于 Pending 状态。如果要让 PVC 立即和 PV 进行绑定，可以在 StorageClass 中将 `volumeBindingMode` 参数设置为 `Immediate`。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221005203646.png)\n\n\n查看宿主集群中真正创建的 PVC。\n```bash\nkubectl config use-context <host-cluster-context>\nkubectl get pvc -n vcluster-storage-vcluster\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221005204240.png)\n\n\n### 6.3 创建 Pod 消费 PersistentVolumeClaim\n```yaml\n# pod-sc.yaml\napiVersion: v1\nkind: Pod\nmetadata:\n  name: my-pod\nspec:\n  containers:\n    - name: my-pod\n      image: nginx\n      volumeMounts:\n        - name: config\n          mountPath: /usr/share/nginx/html\n          subPath: html\n  volumes:\n    - name: config\n      persistentVolumeClaim:\n        claimName: my-persistent-volume-claim # 消费 PVC\n```\n\n在虚拟集群中创建 Pod。\n```bash\nkubectl config use-context <virtual-cluster-context>\nkubectl apply -f pvc-sc.yaml\n```\n\n可以看到当前在虚拟集群中的 Pod 已经成功 Running，并且 PVC 也绑定了 PV。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221005205314.png)\n\n\n实验完毕后，执行以下命令清理虚拟集群。\n\n```bash\nvcluster delete storage-vcluster\n```\n\n\n## 7 高可用\n由于国内无法直接拉去 gcr 的镜像，这里我提前将相关镜像拉取到我的 Docker Hub 上，大家可以直接使用。\n```yaml\n# ha.yaml\n\n# Enable HA mode\nenableHA: true\n\n# Scale up syncer replicas\nsyncer:\n  replicas: 3\n\n# Scale up etcd\netcd:\n  image: cr7258/k8s.gcr.io.etcd:3.5.4-0\n  replicas: 3\n  storage:\n    # If this is disabled, vcluster will use an emptyDir instead\n    # of a PersistentVolumeClaim\n    persistence: false\n    \n# Scale up controller manager\ncontroller:\n  image: cr7258/k8s.gcr.io.kube-controller-manager:v1.25.0\n  replicas: 3\n\n# Scale up api server\napi:\n  image: cr7258/k8s.gcr.io.kube-apiserver:v1.25.0\n  replicas: 3\n\n# Scale up DNS server\ncoredns:\n  replicas: 3\n```\n\n- `--connect=false` 表示不切换到虚拟集群所在的 kubeconfig 上下文。\n- `--distro` 参数可以指定创建虚拟集群使用的 Kubernetes 发行版，默认使用 K3S 作为虚拟集群，这里我们指定使用 Vanilla k8s （普通的 Kubernetes 发行版）来部署虚拟集群。\n```bash\nvcluster create ha-vcluster --connect=false --distro k8s -f ha.yaml\n```\n\n查看创建的虚拟集群控制平面 Pod。可以看到虚拟集群控制平面的组件都有 3 个。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221009180734.png)\n\n实验完毕后，执行以下命令清理虚拟集群。\n\n```bash\nvcluster delete ha-vcluster\n```\n\n## 8 Pod 调度\n\n默认情况下，vcluster 将重用主机集群的调度程序来调度工作负载。这样可以节省计算资源，但也有一些限制：\n- 1.在虚拟集群内标记节点对调度没有影响\n- 2.虚拟集群内的排空或污染节点对调度没有影响\n- 3.您不能在 vcluster 中使用自定义调度程序\n\n```yaml\n# schedule.yaml\nsync:\n  nodes:\n    enabled: true\n    enableScheduler: true\n    syncAllNodes: true\n```\n\n```bash\nvcluster create schedule-vcluster -f schedule.yaml\n```\n\n查看虚拟集群的节点。vcluster 的节点有以下几种模式：\n- **Fake Nodes**\n- **Real Nodes**\n- **Real Nodes All**\n- **Real Nodes Label Selector**\n```bash\n> kubectl get node\nNAME                             STATUS   ROLES    AGE   VERSION\nip-192-168-29-123.ec2.internal   Ready    <none>   20m   v1.23.9-eks-ba74326\nip-192-168-44-166.ec2.internal   Ready    <none>   20m   v1.23.9-eks-ba74326\n```\n\n给节点 ip-192-168-44-166.ec2.internal 打上标签 `disktype=ssd`。\n```bash\nkubectl label nodes ip-192-168-44-166.ec2.internal disktype=ssd\n```\n\n\n创建 Deployment，通过 nodeSelector 参数根据标签选择节点，将 6 个 Pod 都分配到节点 ip-192-168-44-166.ec2.internal 上。\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: nginx-deployment\n  labels:\n    app: nginx\nspec:\n  replicas: 6\n  selector:\n    matchLabels:\n      app: nginx\n  template:\n    metadata:\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - name: nginx\n        image: nginx:1.14.2\n        ports:\n        - containerPort: 80\n      nodeSelector:\n        disktype: ssd\n```\n\n查看 Pod 的分布情况，可以看到所有的 Pod 都调度到了节点 ip-192-168-44-166.ec2.internal 上了。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221009183015.png)\n\n实验完毕后，执行以下命令清理虚拟集群。\n\n```bash\nvcluster delete schedule-vcluster\n```\n\n## 9 隔离模式\n```bash\nvcluster create isolate-vcluster --isolate\n```\n### 9.1 网络隔离\n在虚拟集群中创建一个 Pod。\n```bash\nkubectl create deployment nettool-virtual --image=cr7258/nettool:v1\n```\n在宿主集群中创建一个 Pod。（在宿主集群 context 中执行）\n```bash\nkubectl config use-context <host-cluster-context>\nkubectl create deployment nettool-host --image=cr7258/nettool:v1\n```\n\n查看在虚拟集群和宿主集群中创建的 Pod 的 IP 地址。（在宿主集群 context 中执行）\n```bash\nkubectl get pod -o wide\nkubectl get pod -n vcluster-isolate-vcluster -o wide\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014191123.png)\n\n两个 Pod 之间互相 Ping 测试，可以看到虚拟集群无法通过 IP 地址访问宿主集群，但是宿主集群可以访问虚拟集群。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014191533.png)\n\n让我们看看在宿主集群中创建的 NetworkPolicy（在虚拟集群中是没有 NetworkPolicy 的）。\n```bash\nkubectl get networkpolicies -n vcluster-isolate-vcluster\n```\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014193641.png)\n\n这两条 NetworkPolicy 的 YAML 文件如下所示，可以看到 NetworkPolicy 对虚拟集群的 Egress 方向的流量进行了限制，确保虚拟集群中的工作负载无法主动访问宿主集群或者其他虚拟集群。\n```yaml\n# 允许虚拟集群的控制平面访问宿主集群中的 CoreDNS 以及 API Server\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  annotations:\n    meta.helm.sh/release-name: isolate-vcluster\n    meta.helm.sh/release-namespace: vcluster-isolate-vcluster\n  labels:\n    app.kubernetes.io/managed-by: Helm\n  name: isolate-vcluster-control-plane\n  namespace: vcluster-isolate-vcluster\nspec:\n  egress:\n  - ports:\n    - port: 443\n      protocol: TCP\n    - port: 8443\n      protocol: TCP\n    - port: 6443\n      protocol: TCP\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          kubernetes.io/metadata.name: kube-system\n      podSelector:\n        matchLabels:\n          k8s-app: kube-dns\n  podSelector:\n    matchLabels:\n      release: isolate-vcluster\n  policyTypes:\n  - Egress\n\n# 允许虚拟集群中的工作负载访问虚拟集群的控制平面，以及公网 IP（ipBlock 排除了内网 IP）\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  annotations:\n    meta.helm.sh/release-name: isolate-vcluster\n    meta.helm.sh/release-namespace: vcluster-isolate-vcluster\n  labels:\n    app.kubernetes.io/managed-by: Helm\n  name: isolate-vcluster-workloads\n  namespace: vcluster-isolate-vcluster\nspec:\n  egress:\n  - ports:\n    - port: 443\n      protocol: TCP\n    - port: 8443\n      protocol: TCP\n    to:\n    - podSelector:\n        matchLabels:\n          release: isolate-vcluster\n  - ports:\n    - port: 53\n      protocol: UDP\n    - port: 53\n      protocol: TCP\n  - to:\n    - podSelector:\n        matchLabels:\n          vcluster.loft.sh/managed-by: isolate-vcluster\n    - ipBlock:\n        cidr: 0.0.0.0/0\n        except:\n        - 100.64.0.0/10\n        - 127.0.0.0/8\n        - 10.0.0.0/8\n        - 172.16.0.0/12\n        - 192.168.0.0/16\n  podSelector:\n    matchLabels:\n      vcluster.loft.sh/managed-by: isolate-vcluster\n  policyTypes:\n  - Egress\n```\n\nhttps://orca.tufin.io/netpol/\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014192953.png)\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014193259.png)\n\n### 9.2 资源限制\n同时 vcluster 也会在虚拟集群所在的 Namespace 创建 ResourceQuota 和 LimitRange 来限制资源的使用。\n- 其中 ResourceQuota 用于控制整个虚拟集群消耗宿主集群的资源上限。默认创建的 ResourceQuota 如下所示，限制了虚拟集群最多创建 100 个 Configmap，40 个 Endpoints，最多使用 40 Gi 内存，最多使用 10 核 CPU 等等...\n```yaml\napiVersion: v1\nkind: ResourceQuota\nmetadata:\n  annotations:\n    meta.helm.sh/release-name: isolate-vcluster\n    meta.helm.sh/release-namespace: vcluster-isolate-vcluster\n  labels:\n    app.kubernetes.io/managed-by: Helm\n  name: isolate-vcluster-quota\n  namespace: vcluster-isolate-vcluster\nspec:\n  hard:\n    count/configmaps: \"100\"\n    count/endpoints: \"40\"\n    count/persistentvolumeclaims: \"20\"\n    count/pods: \"20\"\n    count/secrets: \"100\"\n    count/services: \"20\"\n    limits.cpu: \"20\"\n    limits.ephemeral-storage: 160Gi\n    limits.memory: 40Gi\n    requests.cpu: \"10\"\n    requests.ephemeral-storage: 60Gi\n    requests.memory: 20Gi\n    requests.storage: 100Gi\n    services.loadbalancers: \"1\"\n    services.nodeports: \"0\"\n```\n- LimitRange 用于控制每个 Pod 申请资源的上限（当创建的 Pod 没有指定 `resources.requests` 和 `resources.limits` 参数时会应用 LimitRange 的设置）。默认创建的 LimitRange 如下所示。\n```yaml\napiVersion: v1\nkind: LimitRange\nmetadata:\n  annotations:\n    meta.helm.sh/release-name: isolate-vcluster\n    meta.helm.sh/release-namespace: vcluster-isolate-vcluster\n  labels:\n    app.kubernetes.io/managed-by: Helm\n  name: isolate-vcluster-limit-range\n  namespace: vcluster-isolate-vcluster\nspec:\n  limits:\n  - default:\n      cpu: \"1\"\n      ephemeral-storage: 8Gi\n      memory: 512Mi\n    defaultRequest:\n      cpu: 100m\n      ephemeral-storage: 3Gi\n      memory: 128Mi\n    type: Container\n```\n实验完毕后，执行以下命令清理虚拟集群。\n\n```bash\nvcluster delete isolate-vcluster\n```\n\n## 10 Cluster API Provider\nhttps://github.com/loft-sh/cluster-api-provider-vcluster\n\n安装 vcluster provider。\n```bash\nclusterctl init --infrastructure vcluster\n```\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014225826.png)\n\n将会部署以下资源。\n\n![](https://chengzw258.oss-cn-beijing.aliyuncs.com/Article/20221014225922.png)\n\n\n生成 vcluster 资源清单文件并部署。\n```bash\nexport CLUSTER_NAME=vcluster\nexport CLUSTER_NAMESPACE=vcluster\nexport KUBERNETES_VERSION=1.23.0\nexport HELM_VALUES=\"\"\n\nkubectl create namespace ${CLUSTER_NAMESPACE}\nclusterctl generate cluster ${CLUSTER_NAME} \\\n    --infrastructure vcluster \\\n    --kubernetes-version ${KUBERNETES_VERSION} \\\n    --target-namespace ${CLUSTER_NAMESPACE} | kubectl apply -f -\n```\n\n等待虚拟集群创建成功。\n```bash\nkubectl wait --for=condition=ready vcluster -n $CLUSTER_NAMESPACE $CLUSTER_NAME --timeout=300s\n```\n\n## 11 参考资料\n- [1] [Install vcluster CLI: https://www.vcluster.com/docs/getting-started/setup\n- [ ] https://www.vcluster.com/docs/getting-started/deployment"
+    },
+    {
+      "id": "welcome",
+      "metadata": {
+        "permalink": "/se7en-documentation/blog/welcome",
+        "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2021-08-26-welcome/index.md",
+        "source": "@site/blog/2021-08-26-welcome/index.md",
+        "title": "Welcome",
+        "description": "Docusaurus blogging features are powered by the blog plugin.",
+        "date": "2021-08-26T00:00:00.000Z",
+        "formattedDate": "August 26, 2021",
+        "tags": [
+          {
+            "label": "facebook",
+            "permalink": "/se7en-documentation/blog/tags/facebook"
+          },
+          {
+            "label": "hello",
+            "permalink": "/se7en-documentation/blog/tags/hello"
+          },
+          {
+            "label": "docusaurus",
+            "permalink": "/se7en-documentation/blog/tags/docusaurus"
+          }
+        ],
+        "readingTime": 0.405,
+        "hasTruncateMarker": false,
+        "authors": [
+          {
+            "name": "Sébastien Lorber",
+            "title": "Docusaurus maintainer",
+            "url": "https://sebastienlorber.com",
+            "imageURL": "https://github.com/slorber.png",
+            "key": "slorber"
+          },
+          {
+            "name": "Yangshun Tay",
+            "title": "Front End Engineer @ Facebook",
+            "url": "https://github.com/yangshun",
+            "imageURL": "https://github.com/yangshun.png",
+            "key": "yangshun"
+          }
+        ],
+        "frontMatter": {
+          "slug": "welcome",
+          "title": "Welcome",
+          "authors": [
+            "slorber",
+            "yangshun"
+          ],
+          "tags": [
+            "facebook",
+            "hello",
+            "docusaurus"
+          ]
+        },
+        "prevItem": {
+          "title": "vcluster",
+          "permalink": "/se7en-documentation/blog/2022/10/18/vcluster"
+        },
+        "nextItem": {
+          "title": "MDX Blog Post",
+          "permalink": "/se7en-documentation/blog/mdx-blog-post"
+        }
+      },
+      "content": "[Docusaurus blogging features](https://docusaurus.io/docs/blog) are powered by the [blog plugin](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog).\n\nSimply add Markdown files (or folders) to the `blog` directory.\n\nRegular blog authors can be added to `authors.yml`.\n\nThe blog post date can be extracted from filenames, such as:\n\n- `2019-05-30-welcome.md`\n- `2019-05-30-welcome/index.md`\n\nA blog post folder can be convenient to co-locate blog post images:\n\n![Docusaurus Plushie](./docusaurus-plushie-banner.jpeg)\n\nThe blog supports tags as well!\n\n**And if you don't want a blog**: just delete this directory, and use `blog: false` in your Docusaurus config."
+    },
+    {
+      "id": "mdx-blog-post",
+      "metadata": {
+        "permalink": "/se7en-documentation/blog/mdx-blog-post",
+        "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2021-08-01-mdx-blog-post.mdx",
+        "source": "@site/blog/2021-08-01-mdx-blog-post.mdx",
+        "title": "MDX Blog Post",
+        "description": "Blog posts support Docusaurus Markdown features, such as MDX.",
+        "date": "2021-08-01T00:00:00.000Z",
+        "formattedDate": "August 1, 2021",
+        "tags": [
+          {
+            "label": "docusaurus",
+            "permalink": "/se7en-documentation/blog/tags/docusaurus"
+          }
+        ],
+        "readingTime": 0.175,
+        "hasTruncateMarker": false,
+        "authors": [
+          {
+            "name": "Sébastien Lorber",
+            "title": "Docusaurus maintainer",
+            "url": "https://sebastienlorber.com",
+            "imageURL": "https://github.com/slorber.png",
+            "key": "slorber"
+          }
+        ],
+        "frontMatter": {
+          "slug": "mdx-blog-post",
+          "title": "MDX Blog Post",
+          "authors": [
+            "slorber"
+          ],
+          "tags": [
+            "docusaurus"
+          ]
+        },
+        "prevItem": {
+          "title": "Welcome",
+          "permalink": "/se7en-documentation/blog/welcome"
+        },
+        "nextItem": {
+          "title": "Long Blog Post",
+          "permalink": "/se7en-documentation/blog/long-blog-post"
+        }
+      },
+      "content": "Blog posts support [Docusaurus Markdown features](https://docusaurus.io/docs/markdown-features), such as [MDX](https://mdxjs.com/).\n\n:::tip\n\nUse the power of React to create interactive blog posts.\n\n```js\n<button onClick={() => alert('button clicked!')}>Click me!</button>\n```\n\n<button onClick={() => alert('button clicked!')}>Click me!</button>\n\n:::"
+    },
+    {
+      "id": "long-blog-post",
+      "metadata": {
+        "permalink": "/se7en-documentation/blog/long-blog-post",
+        "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2019-05-29-long-blog-post.md",
+        "source": "@site/blog/2019-05-29-long-blog-post.md",
+        "title": "Long Blog Post",
+        "description": "This is the summary of a very long blog post,",
+        "date": "2019-05-29T00:00:00.000Z",
+        "formattedDate": "May 29, 2019",
+        "tags": [
+          {
+            "label": "hello",
+            "permalink": "/se7en-documentation/blog/tags/hello"
+          },
+          {
+            "label": "docusaurus",
+            "permalink": "/se7en-documentation/blog/tags/docusaurus"
+          }
+        ],
+        "readingTime": 2.05,
+        "hasTruncateMarker": true,
+        "authors": [
+          {
+            "name": "Endilie Yacop Sucipto",
+            "title": "Maintainer of Docusaurus",
+            "url": "https://github.com/endiliey",
+            "imageURL": "https://github.com/endiliey.png",
+            "key": "endi"
+          }
+        ],
+        "frontMatter": {
+          "slug": "long-blog-post",
+          "title": "Long Blog Post",
+          "authors": "endi",
+          "tags": [
+            "hello",
+            "docusaurus"
+          ]
+        },
+        "prevItem": {
+          "title": "MDX Blog Post",
+          "permalink": "/se7en-documentation/blog/mdx-blog-post"
+        },
+        "nextItem": {
+          "title": "First Blog Post",
+          "permalink": "/se7en-documentation/blog/first-blog-post"
+        }
+      },
+      "content": "This is the summary of a very long blog post,\n\nUse a `<!--` `truncate` `-->` comment to limit blog post size in the list view.\n\n<!--truncate-->\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet"
+    },
+    {
+      "id": "first-blog-post",
+      "metadata": {
+        "permalink": "/se7en-documentation/blog/first-blog-post",
+        "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2019-05-28-first-blog-post.md",
+        "source": "@site/blog/2019-05-28-first-blog-post.md",
+        "title": "First Blog Post",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet",
+        "date": "2019-05-28T00:00:00.000Z",
+        "formattedDate": "May 28, 2019",
+        "tags": [
+          {
+            "label": "hola",
+            "permalink": "/se7en-documentation/blog/tags/hola"
+          },
+          {
+            "label": "docusaurus",
+            "permalink": "/se7en-documentation/blog/tags/docusaurus"
+          }
+        ],
+        "readingTime": 0.12,
+        "hasTruncateMarker": false,
+        "authors": [
+          {
+            "name": "Gao Wei",
+            "title": "Docusaurus Core Team",
+            "url": "https://github.com/wgao19",
+            "image_url": "https://github.com/wgao19.png",
+            "imageURL": "https://github.com/wgao19.png"
+          }
+        ],
+        "frontMatter": {
+          "slug": "first-blog-post",
+          "title": "First Blog Post",
+          "authors": {
+            "name": "Gao Wei",
+            "title": "Docusaurus Core Team",
+            "url": "https://github.com/wgao19",
+            "image_url": "https://github.com/wgao19.png",
+            "imageURL": "https://github.com/wgao19.png"
+          },
+          "tags": [
+            "hola",
+            "docusaurus"
+          ]
+        },
+        "prevItem": {
+          "title": "Long Blog Post",
+          "permalink": "/se7en-documentation/blog/long-blog-post"
+        }
+      },
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet"
+    }
+  ]
+}

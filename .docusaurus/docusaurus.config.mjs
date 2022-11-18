@@ -4,15 +4,15 @@
  * Modify the docusaurus.config.js file at your site's root instead.
  */
 export default {
-  "title": "My Site",
+  "title": "English Learning",
   "tagline": "Dinosaurs are cool",
-  "url": "https://your-docusaurus-test-site.com",
-  "baseUrl": "/",
+  "url": "https://cr7258.github.io",
+  "baseUrl": "/english/",
   "onBrokenLinks": "throw",
   "onBrokenMarkdownLinks": "warn",
   "favicon": "img/favicon.ico",
-  "organizationName": "facebook",
-  "projectName": "docusaurus",
+  "organizationName": "cr7258",
+  "projectName": "english",
   "i18n": {
     "defaultLocale": "en",
     "locales": [
@@ -26,7 +26,7 @@ export default {
       "classic",
       {
         "docs": {
-          "sidebarPath": "/software/se7en-documentation/sidebars.js",
+          "sidebarPath": "/Users/I576375/Code/english/sidebars.js",
           "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
         },
         "blog": {
@@ -34,14 +34,14 @@ export default {
           "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
         },
         "theme": {
-          "customCss": "/software/se7en-documentation/src/css/custom.css"
+          "customCss": "/Users/I576375/Code/english/src/css/custom.css"
         }
       }
     ]
   ],
   "themeConfig": {
     "navbar": {
-      "title": "My Site",
+      "title": "English Learning",
       "logo": {
         "alt": "My Site Logo",
         "src": "img/logo.svg"
