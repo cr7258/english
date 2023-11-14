@@ -1,9 +1,4 @@
 {
   "title": "Recent posts",
-  "items": [
-    {
-      "title": "First Blog Post",
-      "permalink": "/english/blog/first-blog-post"
-    }
-  ]
+  "items": []
 }

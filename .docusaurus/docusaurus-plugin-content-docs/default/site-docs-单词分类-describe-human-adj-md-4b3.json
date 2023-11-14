@@ -1,0 +1,24 @@
+{
+  "unversionedId": "单词分类/describe-human-adj",
+  "id": "单词分类/describe-human-adj",
+  "title": "形容人（形容词）",
+  "description": "紧张，焦急",
+  "source": "@site/docs/单词分类/describe-human-adj.md",
+  "sourceDirName": "单词分类",
+  "slug": "/单词分类/describe-human-adj",
+  "permalink": "/english/docs/单词分类/describe-human-adj",
+  "draft": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/单词分类/describe-human-adj.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Tutorial Intro",
+    "permalink": "/english/docs/intro"
+  },
+  "next": {
+    "title": "形容人（副词）",
+    "permalink": "/english/docs/单词分类/describe-human-adv"
+  }
+}

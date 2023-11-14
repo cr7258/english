@@ -17,6 +17,26 @@
       },
       {
         "type": "category",
+        "label": "单词分类",
+        "collapsible": true,
+        "collapsed": true,
+        "items": [
+          {
+            "type": "link",
+            "label": "形容人（形容词）",
+            "href": "/english/docs/单词分类/describe-human-adj",
+            "docId": "单词分类/describe-human-adj"
+          },
+          {
+            "type": "link",
+            "label": "形容人（副词）",
+            "href": "/english/docs/单词分类/describe-human-adv",
+            "docId": "单词分类/describe-human-adv"
+          }
+        ]
+      },
+      {
+        "type": "category",
         "label": "词根词缀",
         "collapsible": true,
         "collapsed": true,
@@ -36,6 +56,18 @@
       "id": "词根词缀/lesson1",
       "title": "(走) 词根 -cess,-ceed,-cede,-gress,-gred,-grad",
       "description": "process \\['prəuses\\] n. 过程、进程；v. 处理、加工 392",
+      "sidebar": "tutorialSidebar"
+    },
+    "单词分类/describe-human-adj": {
+      "id": "单词分类/describe-human-adj",
+      "title": "形容人（形容词）",
+      "description": "紧张，焦急",
+      "sidebar": "tutorialSidebar"
+    },
+    "单词分类/describe-human-adv": {
+      "id": "单词分类/describe-human-adv",
+      "title": "形容人（副词）",
+      "description": "紧张，焦急",
       "sidebar": "tutorialSidebar"
     },
     "intro": {

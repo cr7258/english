@@ -38,36 +38,6 @@ export default [
     exact: true
   },
   {
-    path: '/english/blog',
-    component: ComponentCreator('/english/blog', '13d'),
-    exact: true
-  },
-  {
-    path: '/english/blog/archive',
-    component: ComponentCreator('/english/blog/archive', 'b90'),
-    exact: true
-  },
-  {
-    path: '/english/blog/first-blog-post',
-    component: ComponentCreator('/english/blog/first-blog-post', '656'),
-    exact: true
-  },
-  {
-    path: '/english/blog/tags',
-    component: ComponentCreator('/english/blog/tags', '2fe'),
-    exact: true
-  },
-  {
-    path: '/english/blog/tags/docusaurus',
-    component: ComponentCreator('/english/blog/tags/docusaurus', 'a31'),
-    exact: true
-  },
-  {
-    path: '/english/blog/tags/hola',
-    component: ComponentCreator('/english/blog/tags/hola', 'c73'),
-    exact: true
-  },
-  {
     path: '/english/helloMarkdown',
     component: ComponentCreator('/english/helloMarkdown', '63c'),
     exact: true
@@ -84,11 +54,23 @@ export default [
   },
   {
     path: '/english/docs',
-    component: ComponentCreator('/english/docs', 'afc'),
+    component: ComponentCreator('/english/docs', '732'),
     routes: [
       {
         path: '/english/docs/词根词缀/lesson1',
         component: ComponentCreator('/english/docs/词根词缀/lesson1', 'a74'),
+        exact: true,
+        sidebar: "tutorialSidebar"
+      },
+      {
+        path: '/english/docs/单词分类/describe-human-adj',
+        component: ComponentCreator('/english/docs/单词分类/describe-human-adj', 'f59'),
+        exact: true,
+        sidebar: "tutorialSidebar"
+      },
+      {
+        path: '/english/docs/单词分类/describe-human-adv',
+        component: ComponentCreator('/english/docs/单词分类/describe-human-adv', 'ee6'),
         exact: true,
         sidebar: "tutorialSidebar"
       },

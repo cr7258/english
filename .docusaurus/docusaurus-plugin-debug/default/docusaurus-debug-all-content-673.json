@@ -38,8 +38,56 @@
               },
               "sidebar": "tutorialSidebar",
               "previous": {
+                "title": "形容人（副词）",
+                "permalink": "/english/docs/单词分类/describe-human-adv"
+              }
+            },
+            {
+              "unversionedId": "单词分类/describe-human-adj",
+              "id": "单词分类/describe-human-adj",
+              "title": "形容人（形容词）",
+              "description": "紧张，焦急",
+              "source": "@site/docs/单词分类/describe-human-adj.md",
+              "sourceDirName": "单词分类",
+              "slug": "/单词分类/describe-human-adj",
+              "permalink": "/english/docs/单词分类/describe-human-adj",
+              "draft": false,
+              "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/单词分类/describe-human-adj.md",
+              "tags": [],
+              "version": "current",
+              "frontMatter": {},
+              "sidebar": "tutorialSidebar",
+              "previous": {
                 "title": "Tutorial Intro",
                 "permalink": "/english/docs/intro"
+              },
+              "next": {
+                "title": "形容人（副词）",
+                "permalink": "/english/docs/单词分类/describe-human-adv"
+              }
+            },
+            {
+              "unversionedId": "单词分类/describe-human-adv",
+              "id": "单词分类/describe-human-adv",
+              "title": "形容人（副词）",
+              "description": "紧张，焦急",
+              "source": "@site/docs/单词分类/describe-human-adv.md",
+              "sourceDirName": "单词分类",
+              "slug": "/单词分类/describe-human-adv",
+              "permalink": "/english/docs/单词分类/describe-human-adv",
+              "draft": false,
+              "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/单词分类/describe-human-adv.md",
+              "tags": [],
+              "version": "current",
+              "frontMatter": {},
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "形容人（形容词）",
+                "permalink": "/english/docs/单词分类/describe-human-adj"
+              },
+              "next": {
+                "title": "(走) 词根 -cess,-ceed,-cede,-gress,-gred,-grad",
+                "permalink": "/english/docs/词根词缀/lesson1"
               }
             },
             {
@@ -61,8 +109,8 @@
               },
               "sidebar": "tutorialSidebar",
               "next": {
-                "title": "(走) 词根 -cess,-ceed,-cede,-gress,-gred,-grad",
-                "permalink": "/english/docs/词根词缀/lesson1"
+                "title": "形容人（形容词）",
+                "permalink": "/english/docs/单词分类/describe-human-adj"
               }
             }
           ],
@@ -72,6 +120,22 @@
               {
                 "type": "doc",
                 "id": "intro"
+              },
+              {
+                "type": "category",
+                "label": "单词分类",
+                "collapsible": true,
+                "collapsed": true,
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "单词分类/describe-human-adj"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "单词分类/describe-human-adv"
+                  }
+                ]
               },
               {
                 "type": "category",
@@ -94,122 +158,11 @@
   "docusaurus-plugin-content-blog": {
     "default": {
       "blogSidebarTitle": "Recent posts",
-      "blogPosts": [
-        {
-          "id": "first-blog-post",
-          "metadata": {
-            "permalink": "/english/blog/first-blog-post",
-            "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2019-05-28-first-blog-post.md",
-            "source": "@site/blog/2019-05-28-first-blog-post.md",
-            "title": "First Blog Post",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet",
-            "date": "2019-05-28T00:00:00.000Z",
-            "formattedDate": "May 28, 2019",
-            "tags": [
-              {
-                "label": "hola",
-                "permalink": "/english/blog/tags/hola"
-              },
-              {
-                "label": "docusaurus",
-                "permalink": "/english/blog/tags/docusaurus"
-              }
-            ],
-            "readingTime": 0.12,
-            "hasTruncateMarker": false,
-            "authors": [
-              {
-                "name": "Gao Wei",
-                "title": "Docusaurus Core Team",
-                "url": "https://github.com/wgao19",
-                "image_url": "https://github.com/wgao19.png",
-                "imageURL": "https://github.com/wgao19.png"
-              }
-            ],
-            "frontMatter": {
-              "slug": "first-blog-post",
-              "title": "First Blog Post",
-              "authors": {
-                "name": "Gao Wei",
-                "title": "Docusaurus Core Team",
-                "url": "https://github.com/wgao19",
-                "image_url": "https://github.com/wgao19.png",
-                "imageURL": "https://github.com/wgao19.png"
-              },
-              "tags": [
-                "hola",
-                "docusaurus"
-              ]
-            }
-          },
-          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet"
-        }
-      ],
-      "blogListPaginated": [
-        {
-          "items": [
-            "first-blog-post"
-          ],
-          "metadata": {
-            "permalink": "/english/blog",
-            "page": 1,
-            "postsPerPage": 10,
-            "totalPages": 1,
-            "totalCount": 1,
-            "blogDescription": "Blog",
-            "blogTitle": "Blog"
-          }
-        }
-      ],
-      "blogTags": {
-        "/english/blog/tags/hola": {
-          "label": "hola",
-          "items": [
-            "first-blog-post"
-          ],
-          "permalink": "/english/blog/tags/hola",
-          "pages": [
-            {
-              "items": [
-                "first-blog-post"
-              ],
-              "metadata": {
-                "permalink": "/english/blog/tags/hola",
-                "page": 1,
-                "postsPerPage": 10,
-                "totalPages": 1,
-                "totalCount": 1,
-                "blogDescription": "Blog",
-                "blogTitle": "Blog"
-              }
-            }
-          ]
-        },
-        "/english/blog/tags/docusaurus": {
-          "label": "docusaurus",
-          "items": [
-            "first-blog-post"
-          ],
-          "permalink": "/english/blog/tags/docusaurus",
-          "pages": [
-            {
-              "items": [
-                "first-blog-post"
-              ],
-              "metadata": {
-                "permalink": "/english/blog/tags/docusaurus",
-                "page": 1,
-                "postsPerPage": 10,
-                "totalPages": 1,
-                "totalCount": 1,
-                "blogDescription": "Blog",
-                "blogTitle": "Blog"
-              }
-            }
-          ]
-        }
-      },
-      "blogTagsListPath": "/english/blog/tags"
+      "blogPosts": [],
+      "blogListPaginated": [],
+      "blogTags": {},
+      "blogTagsListPath": "/english/blog/tags",
+      "blogTagsPaginated": []
     }
   },
   "docusaurus-plugin-content-pages": {

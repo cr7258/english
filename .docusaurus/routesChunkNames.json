@@ -42,70 +42,6 @@
       "plugin": "plugin---english-docusaurus-debugfe-2-b6b"
     }
   },
-  "/english/blog-13d": {
-    "__comp": "__comp---theme-blog-list-pagea-6-a-7ba",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "sidebar": "sidebar---english-blog-814-ea3",
-    "items": [
-      {
-        "content": "content---english-blog-925-657"
-      }
-    ],
-    "metadata": "metadata---english-blogeba-7ab"
-  },
-  "/english/blog/archive-b90": {
-    "__comp": "__comp---theme-blog-archive-page-9-e-4-1d8",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "archive": "archive---english-blog-archivefa-3-d57"
-  },
-  "/english/blog/first-blog-post-656": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "sidebar": "sidebar---english-blog-814-ea3",
-    "content": "content---english-blog-first-blog-poste-27-75d"
-  },
-  "/english/blog/tags-2fe": {
-    "__comp": "__comp---theme-blog-tags-list-page-01-a-d0b",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "sidebar": "sidebar---english-blog-814-ea3",
-    "tags": "tags---english-blog-tagsd-76-7fd"
-  },
-  "/english/blog/tags/docusaurus-a31": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "sidebar": "sidebar---english-blog-814-ea3",
-    "items": [
-      {
-        "content": "content---english-blog-925-657"
-      }
-    ],
-    "tag": "tag---english-blog-tags-docusaurusb-43-630",
-    "listMetadata": "listMetadata---english-blog-tags-docusaurus-167-0f0"
-  },
-  "/english/blog/tags/hola-c73": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---english-bloge-66-e68"
-    },
-    "sidebar": "sidebar---english-blog-814-ea3",
-    "items": [
-      {
-        "content": "content---english-blog-925-657"
-      }
-    ],
-    "tag": "tag---english-blog-tags-holaeba-23c",
-    "listMetadata": "listMetadata---english-blog-tags-hola-3-bd-22f"
-  },
   "/english/helloMarkdown-63c": {
     "__comp": "__comp---theme-mdx-page-1-f-3-b90",
     "__context": {
@@ -127,7 +63,7 @@
     },
     "content": "content---english-markdown-page-393-9e4"
   },
-  "/english/docs-afc": {
+  "/english/docs-732": {
     "__comp": "__comp---theme-doc-page-1-be-9be",
     "__context": {
       "plugin": "plugin---english-docsdd-9-bb8"
@@ -137,6 +73,14 @@
   "/english/docs/词根词缀/lesson1-a74": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---english-docs-词根词缀-lesson-1453-bbb"
+  },
+  "/english/docs/单词分类/describe-human-adj-f59": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---english-docs-单词分类-describe-human-adj-4-b-3-950"
+  },
+  "/english/docs/单词分类/describe-human-adv-ee6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---english-docs-单词分类-describe-human-adve-2-a-062"
   },
   "/english/docs/intro-70d": {
     "__comp": "__comp---theme-doc-item-178-a40",

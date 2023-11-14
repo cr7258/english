@@ -16,6 +16,16 @@
               "sidebar": "tutorialSidebar"
             },
             {
+              "id": "单词分类/describe-human-adj",
+              "path": "/english/docs/单词分类/describe-human-adj",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "单词分类/describe-human-adv",
+              "path": "/english/docs/单词分类/describe-human-adv",
+              "sidebar": "tutorialSidebar"
+            },
+            {
               "id": "intro",
               "path": "/english/docs/intro",
               "sidebar": "tutorialSidebar"
